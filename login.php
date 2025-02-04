@@ -4,8 +4,12 @@ session_start();
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $username = $_POST['username'];
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
+
+    if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Invalid CSRF token.");
+    }    
 
     if (empty($username)) {
         $errors[] = "Username or email is required";
@@ -24,10 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $stmt->bind_result($id, $username, $email, $hashed_password);
             $stmt->fetch();
             if (password_verify($password, $hashed_password)) {
-                $_SESSION['id'] = $id;
-                $_SESSION['username'] = $username;
-                $_SESSION['email'] = $email;
-                header('Location: index.php');
+                $_SESSION['user'] = json_encode([
+                    'id' => $id,
+                    'username' => $username,
+                    'email' => $email
+                ]);
+                header('Location: dashboard.php');
             } else {
                 $errors[] = "Invalid password";
             }
@@ -74,6 +80,7 @@ if (isset($_SESSION['message'])) {
     }
     ?>
     <form action="login.php" method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
       <div class="input-box">
         <input type="text" name="username" placeholder="username / email" required >
       </div>
