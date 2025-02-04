@@ -49,9 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     }
 
     if (empty($errors)) {
-        $hashed_assword = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param('sss', $username, $email, $hashed_assword);
+        $stmt->bind_param('sss', $username, $email, $hashed_password);
         if($stmt->execute()){
             $_SESSION['message'] = "Registeration Successful and now you can Login!";
             header('Location: login.php');
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Registration </title> 
-    <link rel="stylesheet" href="assets/register-page-style.css">
+    <link rel="stylesheet" href="assets/style.css">
    </head>
 <body>
   <div class="wrapper">
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
         <input type="Submit" value="Register Now">
       </div>
       <div class="text">
-        <h3>Already have an account? <a href="#">Login now</a></h3>
+        <h3>Already have an account? <a href="login.php">Login now</a></h3>
       </div>
     </form>
   </div>
